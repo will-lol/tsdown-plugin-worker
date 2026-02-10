@@ -109,7 +109,7 @@ export function workerQueryPlugin(options: WorkerPluginOptions): Plugin {
         return {
           code: `export default function WorkerWrapper(options) {
             return new ${workerConstructor}(
-              ${urlCode},
+              new URL(${urlCode}, import.meta.url),
               ${workerTypeOption}
             );
           }`,
