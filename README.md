@@ -16,7 +16,7 @@ bun add tsdown-plugin-worker
 
 ```ts
 import { defineConfig } from "tsdown";
-import { workerPlugins } from "tsdown-plugin-worker";
+import workerPlugins from "tsdown-plugin-worker";
 
 export default defineConfig({
   plugins: [workerPlugins({ format: "es" })],
