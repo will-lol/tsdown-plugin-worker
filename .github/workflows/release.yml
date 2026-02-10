@@ -41,8 +41,5 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Install dependencies with npm
-        run: npm ci
-
       - name: Publish to NPM with OIDC
-        run: npm publish --access public
+        run: npm publish --provenance --access public
