@@ -57,6 +57,11 @@ export function workerNewUrlPlugin(options: WorkerPluginOptions): Plugin {
           s ||= new MagicString(code);
           const url = rawUrl.slice(1, -1);
 
+          // Skip __WORKER_ASSET__ placeholders (handled by query-plugin)
+          if (url.includes("__WORKER_ASSET__")) {
+            continue;
+          }
+
           let file: string | undefined;
           if (url[0] === ".") {
             // Relative path
