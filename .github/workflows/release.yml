@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
@@ -38,7 +38,11 @@ jobs:
       - name: Setup Node.js for OIDC
         uses: actions/setup-node@v4
         with:
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies with npm
+        run: npm ci
 
       - name: Publish to NPM with OIDC
-        run: npm publish --provenance --access public
+        run: npm publish --access public
