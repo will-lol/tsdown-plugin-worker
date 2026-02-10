@@ -36,7 +36,7 @@
     "sharedworker",
     "plugin"
   ],
-  "author": "",
+  "author": "will-lol",
   "license": "MIT",
   "devDependencies": {
     "@sxzz/test-utils": "^0.5.15",
@@ -54,5 +54,16 @@
     "rolldown": "^1.0.0-rc.3",
     "strip-literal": "^3.1.0",
     "tsdown": "^0.20.3"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/will-lol/tsdown-plugin-worker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/will-lol/tsdown-plugin-worker/issues"
+  },
+  "homepage": "https://github.com/will-lol/tsdown-plugin-worker#readme"
 }
