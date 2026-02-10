@@ -1,0 +1,58 @@
+{
+  "name": "tsdown-plugin-worker",
+  "version": "0.1.0",
+  "description": "Worker plugin for tsdown - handles ?worker imports and new URL() patterns",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./types.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./types": "./types.d.ts"
+  },
+  "files": [
+    "dist",
+    "types.d.ts"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "build": "tsdown",
+    "prepublishOnly": "bun run build",
+    "release": "bumpp"
+  },
+  "keywords": [
+    "tsdown",
+    "rolldown",
+    "worker",
+    "sharedworker",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@sxzz/test-utils": "^0.5.15",
+    "@types/bun": "latest",
+    "bumpp": "^10.0.0",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "es-module-lexer": "^2.0.0",
+    "magic-string": "^0.30.21",
+    "picocolors": "^1.1.1",
+    "rolldown": "^1.0.0-rc.3",
+    "strip-literal": "^3.1.0",
+    "tsdown": "^0.20.3"
+  }
+}
