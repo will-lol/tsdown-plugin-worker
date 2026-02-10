@@ -14,6 +14,8 @@ bun add tsdown-plugin-worker
 
 ## Quick Start
 
+`tsdown.config.ts`
+
 ```ts
 import { defineConfig } from "tsdown";
 import workerPlugins from "tsdown-plugin-worker";
@@ -21,6 +23,16 @@ import workerPlugins from "tsdown-plugin-worker";
 export default defineConfig({
   plugins: [workerPlugins({ format: "es" })],
 });
+```
+
+`tsconfig.json`
+
+```json
+{
+  "compilerOptions": {
+    "types": ["tsdown-plugin-worker/types"]
+  }
+}
 ```
 
 ## Usage Patterns
@@ -149,25 +161,3 @@ interface WorkerPluginOptions {
   rolldownOptions?: RolldownOptions; // Custom rolldown options for worker bundling
 }
 ```
-
-## TypeScript Support
-
-Add the following to your `tsconfig.json` for proper worker types:
-
-```json
-{
-  "compilerOptions": {
-    "lib": ["WebWorker"]
-  }
-}
-```
-
-Or use the triple-slash directive in worker files:
-
-```ts
-/// <reference lib="webworker" />
-```
-
-## License
-
-MIT
