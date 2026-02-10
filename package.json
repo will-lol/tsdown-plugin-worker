@@ -1,6 +1,6 @@
 {
   "name": "tsdown-plugin-worker",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Worker plugin for tsdown - handles ?worker imports and new URL() patterns",
   "type": "module",
   "main": "./dist/index.cjs",
