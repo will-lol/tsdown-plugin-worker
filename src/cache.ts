@@ -89,6 +89,10 @@ export class WorkerOutputCache {
     return this.assets.values();
   }
 
+  getAllBundles() {
+    return this.bundles.values();
+  }
+
   getEntryFilenameFromHash(hash: string) {
     return this.fileNameHash.get(hash);
   }

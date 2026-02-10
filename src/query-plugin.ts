@@ -1,4 +1,3 @@
-import path from "node:path";
 import MagicString from "magic-string";
 import type { Plugin } from "rolldown";
 import type { WorkerPluginOptions } from "./types";
@@ -138,17 +137,9 @@ export function workerQueryPlugin(options: WorkerPluginOptions): Plugin {
             continue;
           }
 
-          let replacement: string;
-          if (outputOptions.dir) {
-            const relativePath = path.relative(outputOptions.dir, filename);
-            replacement = JSON.stringify(relativePath).slice(1, -1);
-          } else if (outputOptions.file) {
-            const outputDir = path.dirname(outputOptions.file);
-            const relativePath = path.relative(outputDir, filename);
-            replacement = JSON.stringify(relativePath).slice(1, -1);
-          } else {
-            replacement = filename;
-          }
+          // Worker files are emitted to the same output directory as the main bundle,
+          // so we just use the filename directly
+          const replacement = filename;
 
           s.update(match.index, match.index + full.length, replacement);
         }
@@ -163,6 +154,27 @@ export function workerQueryPlugin(options: WorkerPluginOptions): Plugin {
     },
 
     generateBundle(_opts, bundle) {
+      // Emit all bundles (worker entry files)
+      for (const bundleData of workerOutputCache.getAllBundles()) {
+        const duplicateAsset = bundle[bundleData.entryFilename];
+        if (duplicateAsset) {
+          const content =
+            duplicateAsset.type === "asset"
+              ? duplicateAsset.source
+              : duplicateAsset.code;
+          if (isSameContent(content, bundleData.entryCode)) {
+            continue;
+          }
+        }
+
+        this.emitFile({
+          type: "asset",
+          fileName: bundleData.entryFilename,
+          source: bundleData.entryCode,
+        });
+      }
+
+      // Emit additional assets (like WASM files)
       for (const asset of workerOutputCache.getAssets()) {
         if (emittedAssets.has(asset.fileName)) continue;
         emittedAssets.add(asset.fileName);

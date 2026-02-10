@@ -15,11 +15,11 @@ const fixturesDir = path.resolve(dirname, "fixtures");
 
 describe("workerPlugins (factory)", () => {
   test("basic worker import with factory", async () => {
-    const { snapshot } = await rolldownBuild(
+    const build = await rolldownBuild(
       path.resolve(fixturesDir, "basic.ts"),
       workerPlugins({ format: "es" }),
     );
-    console.log(snapshot);
+    const snapshot = build.snapshot;
 
     // Check that the output contains WorkerWrapper
     expect(snapshot).toContain("WorkerWrapper");
@@ -27,6 +27,19 @@ describe("workerPlugins (factory)", () => {
 
     // Check that the worker file is properly referenced (not a placeholder)
     expect(snapshot).toContain("simple-worker.js");
+
+    // Check that worker file is emitted as an asset
+    const workerAsset = build.chunks.find(
+      (chunk: any) => chunk.type === "asset" && chunk.fileName === "simple-worker.js"
+    ) as { type: "asset"; source: string } | undefined;
+    expect(workerAsset).toBeDefined();
+    expect(workerAsset?.source).toContain("self.onmessage");
+
+    // Check that the main chunk references the worker file correctly
+    const mainChunk = build.chunks.find(
+      (chunk: any) => chunk.type === "chunk" && chunk.fileName === "basic.js"
+    ) as { type: "chunk"; code: string } | undefined;
+    expect(mainChunk?.code).toContain('new Worker("simple-worker.js"');
   });
 
   test("iife format includes post plugin", async () => {
@@ -35,8 +48,6 @@ describe("workerPlugins (factory)", () => {
       workerPlugins({ format: "iife" }),
     );
 
-    console.log(snapshot);
-
     // IIFE workers should use classic type
     expect(snapshot).toContain("WorkerWrapper");
   });
@@ -44,11 +55,11 @@ describe("workerPlugins (factory)", () => {
 
 describe("workerQueryPlugin", () => {
   test("basic worker import", async () => {
-    const { snapshot } = await rolldownBuild(
+    const build = await rolldownBuild(
       path.resolve(fixturesDir, "basic.ts"),
       [workerQueryPlugin({ format: "es" })],
     );
-    console.log(snapshot);
+    const { snapshot } = build;
 
     // Check that the output contains WorkerWrapper
     expect(snapshot).toContain("WorkerWrapper");
@@ -56,6 +67,19 @@ describe("workerQueryPlugin", () => {
 
     // Check that the worker file is properly referenced (not a placeholder)
     expect(snapshot).toContain("simple-worker.js");
+
+    // Check that worker file is emitted as an asset
+    const workerAsset = build.chunks.find(
+      (chunk: any) => chunk.type === "asset" && chunk.fileName === "simple-worker.js"
+    ) as { type: "asset"; source: string } | undefined;
+    expect(workerAsset).toBeDefined();
+    expect(workerAsset?.source).toContain("self.onmessage");
+
+    // Check that the main chunk references the worker file correctly
+    const mainChunk = build.chunks.find(
+      (chunk: any) => chunk.type === "chunk" && chunk.fileName === "basic.js"
+    ) as { type: "chunk"; code: string } | undefined;
+    expect(mainChunk?.code).toContain('new Worker("simple-worker.js"');
   });
 
   test("inline worker", async () => {
@@ -63,7 +87,6 @@ describe("workerQueryPlugin", () => {
       path.resolve(fixturesDir, "inline.ts"),
       [workerQueryPlugin({ format: "es" })],
     );
-    console.log(snapshot);
 
     // Inline workers should contain the bundled code
     expect(snapshot).toContain("jsContent");
@@ -76,7 +99,6 @@ describe("workerQueryPlugin", () => {
       path.resolve(fixturesDir, "shared.ts"),
       [workerQueryPlugin({ format: "es" })],
     );
-    console.log(snapshot);
 
     // Check for SharedWorker usage
     expect(snapshot).toContain("SharedWorker");
@@ -88,7 +110,6 @@ describe("workerQueryPlugin", () => {
       path.resolve(fixturesDir, "with-imports.ts"),
       [workerQueryPlugin({ format: "es" })],
     );
-    console.log(snapshot);
 
     // Should bundle worker with its dependencies
     expect(snapshot).toContain("WorkerWrapper");
@@ -98,16 +119,30 @@ describe("workerQueryPlugin", () => {
 
 describe("workerNewUrlPlugin", () => {
   test("handles new URL() pattern with Worker", async () => {
-    const { snapshot } = await rolldownBuild(
+    const build = await rolldownBuild(
       path.resolve(fixturesDir, "new-url-pattern.ts"),
       [workerNewUrlPlugin({ format: "es" })],
     );
-    console.log(snapshot);
+    const { snapshot } = build;
 
     // Should transform the new URL pattern
     expect(snapshot).toContain("Worker");
     // Should replace placeholder with actual worker filename
     expect(snapshot).toContain("simple-worker.js");
+
+    // Check that worker file is emitted as an asset
+    const workerAsset = build.chunks.find(
+      (chunk: any) => chunk.type === "asset" && chunk.fileName === "simple-worker.js"
+    ) as { type: "asset"; source: string } | undefined;
+    expect(workerAsset).toBeDefined();
+    expect(workerAsset?.source).toContain("self.onmessage");
+
+    // Check that the main chunk references the worker file correctly via import.meta.url
+    const mainChunk = build.chunks.find(
+      (chunk: any) => chunk.type === "chunk" && chunk.fileName === "new-url-pattern.js"
+    ) as { type: "chunk"; code: string } | undefined;
+    expect(mainChunk?.code).toContain("simple-worker.js");
+    expect(mainChunk?.code).toContain("import.meta.url");
   });
 
   test("handles new URL() pattern with SharedWorker", async () => {
@@ -115,7 +150,6 @@ describe("workerNewUrlPlugin", () => {
       path.resolve(fixturesDir, "new-url-shared.ts"),
       [workerNewUrlPlugin({ format: "es" })],
     );
-    console.log(snapshot);
 
     // Should transform the new URL pattern
     expect(snapshot).toContain("SharedWorker");
@@ -128,7 +162,6 @@ describe("workerNewUrlPlugin", () => {
       path.resolve(fixturesDir, "new-url-with-options.ts"),
       [workerNewUrlPlugin({ format: "es" })],
     );
-    console.log(snapshot);
 
     // Should transform the new URL pattern
     expect(snapshot).toContain("Worker");
@@ -154,7 +187,6 @@ describe("workerPostPlugin", () => {
         workerPostPlugin({ format: "iife" }),
       ],
     );
-    console.log(snapshot);
 
     // IIFE workers should use classic type
     expect(snapshot).toContain("WorkerWrapper");
@@ -167,7 +199,6 @@ describe("workerFileToUrl", () => {
       path.resolve(fixturesDir, "simple-worker.ts?worker"),
       { format: "es" },
     );
-    console.log(bundle);
 
     expect(bundle.entryFilename).toBeDefined();
     expect(bundle.entryCode).toBeDefined();
