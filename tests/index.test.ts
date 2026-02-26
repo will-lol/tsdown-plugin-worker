@@ -120,7 +120,6 @@ describe("workerQueryPlugin", () => {
     });
 
     const workerAsset = getAsset(build, "editor.worker.js");
-    console.log(workerAsset.source);
     expect(assetSourceText(workerAsset.source)).toContain('source: "monaco"');
   });
 });
