@@ -21,8 +21,22 @@ export function workerQueryPlugin(options: WorkerPluginOptions): Plugin {
       emittedAssets.clear();
     },
 
-    load: {
+    resolveId: {
+      order: "pre",
       filter: { id: workerOrSharedWorkerRE },
+      async handler(id, importer) {
+        const queryIndex = id.indexOf("?");
+        if (queryIndex === -1) return;
+        const cleanId = id.slice(0, queryIndex);
+        const query = id.slice(queryIndex);
+        const resolved = await this.resolve(cleanId, importer, {
+          skipSelf: true,
+        });
+        if (resolved !== null) return { id: resolved.id + query };
+      },
+    },
+
+    load: {
       async handler(id: string) {
         const workerMatch = workerOrSharedWorkerRE.exec(id);
         if (!workerMatch) return;
