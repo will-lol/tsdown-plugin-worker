@@ -1,4 +1,3 @@
-import path from "node:path";
 import type { RollupError } from "rolldown";
 import type {
   WorkerBundle,
