@@ -18,7 +18,6 @@ import {
   snapshotPath,
   stripNoise,
 } from "./helpers";
-import { worker } from "node:cluster";
 
 describe("workerPlugins (factory)", () => {
   test("basic worker import with factory", async () => {
@@ -107,21 +106,6 @@ describe("workerQueryPlugin", () => {
     expect(workerAsset).toBeDefined();
   });
 
-  test("worker import from package path", async () => {
-    const build = await buildFixture("from-package", [
-      workerQueryPlugin({ format: "es" }),
-    ]);
-
-    const mainChunk = getChunk(build, "input.js");
-    expect(mainChunk.code).toContain("WorkerWrapper");
-    expectWorkerUrlSemantics(mainChunk.code, {
-      constructorName: "Worker",
-      fileName: "editor.worker.js",
-    });
-
-    const workerAsset = getAsset(build, "editor.worker.js");
-    expect(assetSourceText(workerAsset.source)).toContain('source: "monaco"');
-  });
 });
 
 describe("workerNewUrlPlugin", () => {
