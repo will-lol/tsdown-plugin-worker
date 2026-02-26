@@ -115,6 +115,22 @@ import MyWorker from "./worker.ts?worker";
 const worker = new MyWorker();
 ```
 
+### 8. Package Worker Imports
+
+You can import workers from packages (including `?worker&inline`):
+
+```ts
+import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker.js?worker";
+// or
+import InlineEditorWorker from "monaco-editor/esm/vs/editor/editor.worker.js?worker&inline";
+
+const worker = new EditorWorker();
+```
+
+> [!WARNING]
+> Package worker imports can cause dependencies to be internalized into your build output.
+> If you expected those dependencies to stay external for downstream bundlers, review your output carefully before publishing libraries.
+
 ## Format Options
 
 ### ES Modules (`format: 'es'`)
