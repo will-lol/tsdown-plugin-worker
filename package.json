@@ -24,7 +24,10 @@
     "types.d.ts"
   ],
   "scripts": {
-    "test": "vitest",
+    "test": "bun run typecheck && vitest",
+    "typecheck:src": "bunx tsc --noEmit -p tsconfig.json",
+    "typecheck:fixtures": "bunx tsc --noEmit -p tsconfig.fixtures.json",
+    "typecheck": "bun run typecheck:src && bun run typecheck:fixtures",
     "build": "tsdown",
     "prepublishOnly": "bun run build",
     "release": "bumpp"
